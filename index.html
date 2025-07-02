@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Snap Your Moment!</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Schoolbell&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Chewy', cursive;
+      background: url('BG DEMO.png') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #loading {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
+      font-weight: bold;
+      z-index: 999;
+    }
+
+    #startScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #startButton {
+      padding: 15px 30px;
+      font-size: 24px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background-color: #1e88e5;
+      color: white;
+      cursor: pointer;
+    }
+
+    #cameraScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #previewContainer {
+      position: relative;
+      width: 360px;
+      height: 640px;
+    }
+
+    video, canvas, #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(1.1) contrast(1.1) saturate(1.2);
+    }
+
+    #frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #buttonList {
+      display: flex;
+      overflow-x: scroll;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .filterButton {
+      flex: 0 0 auto;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .filterButton.selected {
+      transform: scale(1.2);
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 24px;
+      font-size: 18px;
+      font-family: 'Schoolbell', cursive;
+      border: none;
+      border-radius: 8px;
+      background-color: #1e88e5;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loading">Loading...</div>
+
+  <div id="startScreen">
+    <button id="startButton">Start</button>
+  </div>
+
+  <div id="cameraScreen">
+    <div id="previewContainer">
+      <video id="video" autoplay playsinline></video>
+      <img id="background" src="background1.png">
+      <img id="frame" src="frame1.png">
+      <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+
+    <div id="buttonList"></div>
+
+    <button id="capture">Capture</button>
+    <button id="retry" style="display:none;">Retake</button>
+    <a id="download" style="display:none;">Download</a>
+  </div>
+
+  <script>
+    const startButton = document.getElementById('startButton');
+    const startScreen = document.getElementById('startScreen');
+    const cameraScreen = document.getElementById('cameraScreen');
+    const loadingScreen = document.getElementById('loading');
+    const video = document.getElementById('video');
+    const background = document.getElementById('background');
+    const frame = document.getElementById('frame');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('capture');
+    const retryButton = document.getElementById('retry');
+    const downloadLink = document.getElementById('download');
+    const buttonList = document.getElementById('buttonList');
+
+    let stream;
+    let currentIndex = 1;
+
+    startButton.addEventListener('click', () => {
+      startScreen.style.display = 'none';
+      cameraScreen.style.display = 'flex';
+      startCamera();
+    });
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        video.srcObject = stream;
+        video.play();
+
+        video.onloadedmetadata = () => {
+          loadingScreen.style.display = 'none';
+        };
+      } catch (error) {
+        loadingScreen.innerText = 'Camera access denied or not supported.';
+        console.error(error);
+      }
+    }
+
+    for (let i = 1; i <= 10; i++) {
+      const btn = document.createElement('img');
+      btn.src = `button${i}.png`;
+      btn.classList.add('filterButton');
+      if (i === 1) btn.classList.add('selected');
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filterButton').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        currentIndex = i;
+        background.src = `background${i}.png`;
+        frame.src = `frame${i}.png`;
+      });
+      buttonList.appendChild(btn);
+    }
+
+    captureButton.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      const width = 1080;
+      const height = 1920;
+      canvas.width = width;
+      canvas.height = height;
+
+      context.save();
+      context.scale(-1, 1);
+      context.translate(-width, 0);
+      context.drawImage(video, 0, 0, width, height);
+      context.restore();
+
+      const bg = new Image();
+      bg.src = `background${currentIndex}.png`;
+      bg.onload = () => {
+        context.drawImage(bg, 0, 0, width, height);
+
+        const fr = new Image();
+        fr.src = `frame${currentIndex}.png`;
+        fr.onload = () => {
+          context.drawImage(fr, 0, 0, width, height);
+
+          canvas.style.display = 'block';
+          downloadLink.href = canvas.toDataURL('image/png');
+          downloadLink.download = `photo_${new Date().toISOString().replace(/[-:.]/g, "").slice(0, 15)}.png`;
+          downloadLink.style.display = 'inline-block';
+          captureButton.style.display = 'none';
+          retryButton.style.display = 'inline-block';
+          stream.getTracks().forEach(track => track.stop());
+          video.style.display = 'none';
+        };
+      };
+    });
+
+    retryButton.addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+
+</body>
+
+</html>
