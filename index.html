@@ -1,277 +1,212 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEN TOES ACADEMY</title>
+    <title>Ten Toes Academy - Quiksnap</title>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
     <style>
-        /* 样式与你提供的一样，保留即可 */
-        /* 省略样式部分，完全保留你原本的CSS */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Chewy', cursive;
+            overflow: hidden;
+            background: url('BG_DEMO.png') no-repeat center center/cover;
+        }
+
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #homeScreen {
+            display: flex;
+        }
+
+        #loadingScreen {
+            backdrop-filter: blur(10px);
+            font-size: 2rem;
+            color: white;
+        }
+
+        #cameraScreen video {
+            width: 100%;
+            height: auto;
+            transform: scaleX(-1);
+        }
+
+        .control-bar {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .button-bar {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .style-buttons {
+            position: absolute;
+            bottom: 80px;
+            display: flex;
+            overflow-x: auto;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .style-buttons img {
+            width: 60px;
+            height: 60px;
+            margin: 0 5px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .mode-bar {
+            position: absolute;
+            bottom: 150px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        button {
+            font-family: 'Chewy', cursive;
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+        }
     </style>
 </head>
+
 <body>
-    <!-- HTML 页面结构完全保留你原本的 -->
+    <div id="homeScreen" class="screen">
+        <img src="BG_DEMO.png" alt="Home Background" style="width:100%;height:100%;object-fit:cover;position:absolute;z-index:-1;">
+        <button id="startBtn">START</button>
+    </div>
+
+    <div id="loadingScreen" class="screen">
+        Loading...
+    </div>
+
+    <div id="cameraScreen" class="screen">
+        <div class="control-bar">
+            <img src="retake.png" id="retakeBtn">
+            <img src="cross.png" id="homeBtn">
+            <img src="download.png" id="downloadBtn">
+        </div>
+        <video id="cameraView" autoplay muted></video>
+        <div class="style-buttons" id="styleButtons"></div>
+        <div class="mode-bar">
+            <button id="photoMode">Quiksnap</button>
+            <button id="videoMode">10s</button>
+            <button id="filterMode">Filter</button>
+        </div>
+        <div class="button-bar">
+            <button id="captureBtn">📸</button>
+        </div>
+    </div>
+
+    <div id="previewScreen" class="screen">
+        <img id="previewImage" style="max-width: 100%; max-height: 100%;">
+        <div class="control-bar">
+            <img src="retake.png" id="previewRetakeBtn">
+            <img src="cross.png" id="previewHomeBtn">
+            <img src="download.png" id="previewDownloadBtn">
+        </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const homeScreen = document.getElementById('homeScreen');
-            const loadingScreen = document.getElementById('loadingScreen');
-            const cameraScreen = document.getElementById('cameraScreen');
-            const previewScreen = document.getElementById('previewScreen');
-            const startBtn = document.getElementById('startBtn');
-            const captureBtn = document.getElementById('captureBtn');
-            const retakeBtn = document.getElementById('retakeBtn');
-            const homeBtn = document.getElementById('homeBtn');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const cameraFeed = document.getElementById('cameraFeed');
-            const previewBg = document.getElementById('previewBg');
-            const frameOverlay = document.getElementById('frameOverlay');
-            const previewImage = document.getElementById('previewImage');
-            const previewVideo = document.getElementById('previewVideo');
-            const previewRetake = document.getElementById('previewRetake');
-            const previewHome = document.getElementById('previewHome');
-            const previewDownload = document.getElementById('previewDownload');
-            const styleButtons = document.querySelectorAll('.style-button');
-            const modeButtons = document.querySelectorAll('.mode-btn');
-            const filterToggle = document.getElementById('filterToggle');
-            const filterBar = document.getElementById('filterBar');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const timer = document.getElementById('timer');
+        const homeScreen = document.getElementById('homeScreen');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const cameraScreen = document.getElementById('cameraScreen');
+        const previewScreen = document.getElementById('previewScreen');
 
-            let currentStyle = 1;
-            let currentFilter = null;
-            let mediaStream = null;
-            let mediaRecorder = null;
-            let recordedChunks = [];
-            let recordingTimer = null;
-            let recordingTime = 10;
+        const startBtn = document.getElementById('startBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const cameraView = document.getElementById('cameraView');
 
-            let pressTimer = null;
-            let pressStartTime = 0;
+        const previewImage = document.getElementById('previewImage');
+        const previewRetakeBtn = document.getElementById('previewRetakeBtn');
+        const previewHomeBtn = document.getElementById('previewHomeBtn');
+        const previewDownloadBtn = document.getElementById('previewDownloadBtn');
 
-            startBtn.addEventListener('click', startApp);
+        let stream;
 
-            function startApp() {
-                homeScreen.style.filter = 'blur(10px)';
-                loadingScreen.style.opacity = '1';
-                loadingScreen.style.pointerEvents = 'all';
+        startBtn.onclick = () => {
+            homeScreen.style.display = 'none';
+            loadingScreen.style.display = 'flex';
 
-                setTimeout(() => {
-                    initCamera();
-                }, 3000);
-            }
-
-            function initCamera() {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
-                    .then(stream => {
-                        mediaStream = stream;
-                        cameraFeed.srcObject = stream;
-                        loadingScreen.style.opacity = '0';
-                        loadingScreen.style.pointerEvents = 'none';
-                        cameraScreen.style.display = 'flex';
-                    })
-                    .catch(err => {
-                        console.error('摄像头访问失败:', err);
-                        loadingScreen.innerHTML = '<div class="loading-text">无法访问相机，请检查权限。<br><button onclick="location.reload()">返回重试</button></div>';
-                    });
-            }
-
-            function updateStyle(style) {
-                currentStyle = style;
-                previewBg.src = `background${style}.png`;
-                frameOverlay.src = `frame${style}.png`;
-                styleButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.dataset.style == style) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
-
-            styleButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    updateStyle(btn.dataset.style);
-                });
-            });
-
-            modeButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (btn.id === 'filterToggle') {
-                        filterBar.classList.toggle('active');
-                        return;
-                    }
-                    modeButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    filterBar.classList.remove('active');
-                });
-            });
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterButtons.forEach(b => b.classList.remove('active'));
-                    if (btn.dataset.filter === currentFilter) {
-                        currentFilter = null;
-                        cameraFeed.style.filter = 'none';
-                    } else {
-                        btn.classList.add('active');
-                        currentFilter = btn.dataset.filter;
-                        switch (currentFilter) {
-                            case 'warm': cameraFeed.style.filter = 'sepia(0.3) saturate(1.5) brightness(1.1)'; break;
-                            case 'cool': cameraFeed.style.filter = 'hue-rotate(180deg) saturate(1.2) contrast(1.1)'; break;
-                            case 'vintage': cameraFeed.style.filter = 'sepia(0.5) contrast(1.2) brightness(0.9)'; break;
-                        }
-                    }
-                });
-            });
-
-            captureBtn.addEventListener('mousedown', startPress);
-            captureBtn.addEventListener('touchstart', startPress);
-            captureBtn.addEventListener('mouseup', endPress);
-            captureBtn.addEventListener('touchend', endPress);
-
-            function startPress(e) {
-                e.preventDefault();
-                pressStartTime = new Date().getTime();
-                pressTimer = setTimeout(() => {
-                    startVideoRecording();
-                }, 500);
-            }
-
-            function endPress(e) {
-                e.preventDefault();
-                let pressDuration = new Date().getTime() - pressStartTime;
-                clearTimeout(pressTimer);
-                if (pressDuration < 500) {
-                    takePhoto();
-                } else {
-                    stopVideoRecording();
-                }
-            }
-
-            function takePhoto() {
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
-                canvas.width = cameraFeed.videoWidth;
-                canvas.height = cameraFeed.videoHeight;
-
-                context.translate(canvas.width, 0);
-                context.scale(-1, 1);
-                context.filter = cameraFeed.style.filter;
-                context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
-
-                const finalCanvas = document.createElement('canvas');
-                finalCanvas.width = canvas.width;
-                finalCanvas.height = canvas.height;
-                const finalCtx = finalCanvas.getContext('2d');
-
-                finalCtx.drawImage(previewBg, 0, 0, finalCanvas.width, finalCanvas.height);
-                finalCtx.drawImage(canvas, 0, 0, finalCanvas.width, finalCanvas.height);
-
-                const frameImg = new Image();
-                frameImg.src = frameOverlay.src;
-                frameImg.onload = function () {
-                    finalCtx.drawImage(frameImg, 0, 0, finalCanvas.width, finalCanvas.height);
-                    previewImage.src = finalCanvas.toDataURL('image/png');
-                    cameraScreen.style.display = 'none';
-                    previewScreen.style.display = 'flex';
-                    previewImage.style.display = 'block';
-                    previewVideo.style.display = 'none';
-                };
-            }
-
-            function startVideoRecording() {
-                captureBtn.classList.add('video-recording');
-                timer.style.display = 'block';
-                timer.textContent = `${recordingTime}s`;
-
-                recordedChunks = [];
-                mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
-
-                mediaRecorder.ondataavailable = event => {
-                    if (event.data.size > 0) {
-                        recordedChunks.push(event.data);
-                    }
-                };
-
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    const url = URL.createObjectURL(blob);
-                    previewVideo.src = url;
-                };
-
-                mediaRecorder.start();
-
-                let timeLeft = recordingTime;
-                recordingTimer = setInterval(() => {
-                    timeLeft--;
-                    timer.textContent = `${timeLeft}s`;
-                    if (timeLeft <= 0) {
-                        stopVideoRecording();
-                    }
-                }, 1000);
-            }
-
-            function stopVideoRecording() {
-                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                    mediaRecorder.stop();
-                }
-                captureBtn.classList.remove('video-recording');
-                clearInterval(recordingTimer);
-                timer.style.display = 'none';
-
-                setTimeout(() => {
-                    cameraScreen.style.display = 'none';
-                    previewScreen.style.display = 'flex';
-                    previewVideo.style.display = 'block';
-                    previewImage.style.display = 'none';
-                }, 500);
-            }
-
-            retakeBtn.addEventListener('click', () => {
-                previewScreen.style.display = 'none';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
                 cameraScreen.style.display = 'flex';
-            });
+                startCamera();
+            }, 3000);
+        };
 
-            homeBtn.addEventListener('click', () => {
-                stopMedia();
-                cameraScreen.style.display = 'none';
-                homeScreen.style.filter = 'none';
-            });
+        async function startCamera() {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            cameraView.srcObject = stream;
+        }
 
-            previewRetake.addEventListener('click', () => {
-                previewScreen.style.display = 'none';
-                cameraScreen.style.display = 'flex';
-            });
+        captureBtn.onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraView.videoWidth;
+            canvas.height = cameraView.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
+            previewImage.src = canvas.toDataURL('image/png');
 
-            previewHome.addEventListener('click', () => {
-                stopMedia();
-                previewScreen.style.display = 'none';
-                homeScreen.style.filter = 'none';
-            });
+            cameraScreen.style.display = 'none';
+            previewScreen.style.display = 'flex';
+        };
 
-            previewDownload.addEventListener('click', () => {
-                if (previewImage.style.display === 'block') {
-                    const link = document.createElement('a');
-                    link.href = previewImage.src;
-                    link.download = `ten-toes-${new Date().getTime()}.png`;
-                    link.click();
-                } else {
-                    const link = document.createElement('a');
-                    link.href = previewVideo.src;
-                    link.download = `ten-toes-${new Date().getTime()}.webm`;
-                    link.click();
-                }
-            });
+        retakeBtn.onclick = () => {
+            cameraScreen.style.display = 'flex';
+            previewScreen.style.display = 'none';
+        };
 
-            function stopMedia() {
-                if (mediaStream) {
-                    mediaStream.getTracks().forEach(track => track.stop());
-                }
-            }
+        homeBtn.onclick = () => {
+            cameraScreen.style.display = 'none';
+            homeScreen.style.display = 'flex';
+            stream.getTracks().forEach(track => track.stop());
+        };
 
-            updateStyle(1);
-        });
+        downloadBtn.onclick = () => {
+            const link = document.createElement('a');
+            link.href = previewImage.src;
+            link.download = 'photo.png';
+            link.click();
+        };
+
+        previewRetakeBtn.onclick = retakeBtn.onclick;
+        previewHomeBtn.onclick = homeBtn.onclick;
+        previewDownloadBtn.onclick = downloadBtn.onclick;
     </script>
 </body>
+
 </html>
