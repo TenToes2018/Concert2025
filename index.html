@@ -1,238 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ten Toes Photo Booth</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-
-        #home, #loading, #camera {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            background-size: cover;
-            background-position: center;
-        }
-
-        #loading {
-            backdrop-filter: blur(10px);
-            display: none;
-            font-size: 30px;
-        }
-
-        #camera {
-            display: none;
-            flex-direction: column;
-        }
-
-        video, canvas {
-            width: 70%;
-            border-radius: 20px;
-        }
-
-        .button-bar {
-            display: flex;
-            overflow-x: auto;
-            margin-top: 20px;
-        }
-
-        .button-bar img {
-            width: 60px;
-            height: 60px;
-            margin: 0 10px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .button-bar img.selected {
-            transform: scale(1.5);
-        }
-
-        .top-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .top-buttons img {
-            width: 40px;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-
-        .action-buttons {
-            display: flex;
-            margin-top: 20px;
-        }
-
-        .action-buttons button {
-            margin: 0 10px;
-            padding: 10px 20px;
-            font-size: 18px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insta Story Style Camera</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <!-- Home Page -->
-    <div id="home" style="background-image: url('BG DEMO.png');">
-        <img src="start.png" id="startButton" style="cursor: pointer;">
+
+<div id="camera-container">
+  <video id="camera" autoplay playsinline></video>
+  
+  <div id="slider">
+    <div id="buttons"></div>
+  </div>
+  
+  <div id="controls">
+    <button id="capture-btn"></button>
+    <div id="filter-options">
+      <button onclick="setFilter('none')">No Filter</button>
+      <button onclick="setFilter('brightness(1.2)')">Bright</button>
+      <button onclick="setFilter('contrast(1.5)')">Contrast</button>
     </div>
+  </div>
+</div>
 
-    <!-- Loading Page -->
-    <div id="loading" style="background-image: url('BG DEMO.png');">
-        <div>Loading...</div>
-    </div>
-
-    <!-- Camera Page -->
-    <div id="camera">
-        <div class="top-buttons">
-            <img src="cross.png" id="homeButton">
-            <img src="retake.png" id="retakeButton">
-            <img src="download.png" id="downloadButton">
-        </div>
-
-        <video id="video" autoplay muted></video>
-        <canvas id="canvas" style="display:none;"></canvas>
-
-        <div class="button-bar" id="frameButtons"></div>
-
-        <div class="action-buttons">
-            <button id="filterButton">Change Filter</button>
-        </div>
-    </div>
-
-    <script>
-        let stream;
-        let video = document.getElementById('video');
-        let canvas = document.getElementById('canvas');
-        let filterIndex = 0;
-        let filters = ["none", "brightness(1.2)", "contrast(1.2)", "saturate(1.5)"];
-
-        document.getElementById('startButton').onclick = () => {
-            document.getElementById('home').style.display = 'none';
-            document.getElementById('loading').style.display = 'flex';
-            setTimeout(startCamera, 3000);
-        };
-
-        async function startCamera() {
-            try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('camera').style.display = 'flex';
-            } catch (error) {
-                alert('Unable to access camera');
-            }
-        }
-
-        document.getElementById('filterButton').onclick = () => {
-            filterIndex = (filterIndex + 1) % filters.length;
-            video.style.filter = filters[filterIndex];
-        };
-
-        let frameButtons = document.getElementById('frameButtons');
-
-        for (let i = 1; i <= 10; i++) {
-            let btn = document.createElement('img');
-            btn.src = `button${i}.png`;
-            btn.dataset.index = i;
-            btn.onclick = () => selectFrame(i, btn);
-            frameButtons.appendChild(btn);
-        }
-
-        function selectFrame(index, btn) {
-            document.querySelectorAll('.button-bar img').forEach(img => img.classList.remove('selected'));
-            btn.classList.add('selected');
-            document.getElementById('camera').style.backgroundImage = `url('background${index}.png')`;
-            video.style.borderImage = `url('frame${index}.png') 30 round`;
-        }
-
-        let recording = false;
-        let mediaRecorder;
-        let recordedChunks = [];
-
-        video.onmousedown = () => {
-            startRecording();
-        };
-
-        video.onmouseup = () => {
-            if (recording) {
-                stopRecording();
-            } else {
-                takePhoto();
-            }
-        };
-
-        function startRecording() {
-            mediaRecorder = new MediaRecorder(stream);
-            recordedChunks = [];
-            mediaRecorder.ondataavailable = event => {
-                if (event.data.size > 0) {
-                    recordedChunks.push(event.data);
-                }
-            };
-            mediaRecorder.onstop = () => {
-                let blob = new Blob(recordedChunks, { type: 'video/webm' });
-                let url = URL.createObjectURL(blob);
-                let a = document.createElement('a');
-                a.href = url;
-                a.download = 'video.webm';
-                a.click();
-            };
-            mediaRecorder.start();
-            recording = true;
-            setTimeout(stopRecording, 10000);
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && recording) {
-                mediaRecorder.stop();
-                recording = false;
-            }
-        }
-
-        function takePhoto() {
-            canvas.style.display = 'block';
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            let ctx = canvas.getContext('2d');
-            ctx.filter = video.style.filter;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            let img = canvas.toDataURL('image/png');
-            let a = document.createElement('a');
-            a.href = img;
-            a.download = 'photo.png';
-            a.click();
-            canvas.style.display = 'none';
-        }
-
-        document.getElementById('homeButton').onclick = () => {
-            location.reload();
-        };
-
-        document.getElementById('retakeButton').onclick = () => {
-            canvas.style.display = 'none';
-        };
-
-        document.getElementById('downloadButton').onclick = () => {
-            takePhoto();
-        };
-
-    </script>
+<script src="script.js"></script>
 </body>
-
 </html>
