@@ -1,224 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snap Your Moment!</title>
 
-  <!-- 字体链接 -->
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Schoolbell&display=swap" rel="stylesheet">
 
   <style>
-    body {
+    body, html {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Chewy', cursive;
-      background: url('BG%20DEMO.png') no-repeat center center fixed;
+      background: url('BG_DEMO.png') no-repeat center center fixed;
       background-size: cover;
-      height: 100vh;
+    }
+
+    #loadingScreen, #cameraScreen {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #loadingScreen {
+      background: url('BG_DEMO.png') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(5px);
+      font-size: 24px;
+      font-weight: bold;
+      color: black;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
     }
 
-    #camera-container {
-      position: relative;
-      width: 90%;
-      max-width: 360px;
-    }
-
-    video, canvas {
-      width: 100%;
-      border-radius: 16px;
-      background: white;
-      object-fit: cover;
-      object-position: center;
-    }
-
-    #controls, #backgrounds, #frames {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    button, select {
-      margin: 5px;
-      padding: 10px 15px;
-      font-size: 16px;
-      font-family: 'Chewy', cursive;
-      border-radius: 8px;
+    #startButton {
+      padding: 10px 30px;
+      font-size: 24px;
       border: none;
+      border-radius: 10px;
       background-color: #1e88e5;
       color: white;
       cursor: pointer;
     }
 
-    #download {
-      display: none;
-      margin-top: 10px;
+    #cameraScreen {
+      background: url('BG_DEMO.png') no-repeat center center fixed;
+      background-size: cover;
+      backdrop-filter: blur(5px);
+      flex-direction: column;
+      justify-content: flex-start;
     }
 
-    #loading {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background: #f0f2f5;
+    video, canvas {
+      width: 360px;
+      height: 640px;
+      object-fit: cover;
+      transform: scaleX(-1);
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+
+    #controls {
+      margin-top: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    .slider {
+      display: flex;
+      overflow-x: auto;
+      width: 80%;
+      margin: 10px auto;
+    }
+
+    .slider button {
+      min-width: 80px;
+      height: 80px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 50%;
+      background-color: white;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .slider button.selected {
+      transform: scale(1.3);
+    }
+
+    #filterSelect, #modeSelect {
+      margin: 10px;
+      font-size: 16px;
+    }
+
+    #retake, #download, #back {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
       font-size: 24px;
-      font-family: 'Chewy', cursive;
-      z-index: 999;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #inputName {
+      margin: 10px auto;
+      padding: 5px;
+      width: 80%;
     }
   </style>
 </head>
 
 <body>
 
-<div id="loading">Loading...</div>
+  <div id="startScreen" style="display:flex; justify-content:center; align-items:center; height:100vh;">
+    <img src="BG_DEMO.png" style="position:absolute; width:100%; height:100%; object-fit:cover;">
+    <button id="startButton">START</button>
+  </div>
 
-<div id="camera-container" style="display:none;">
-  <video id="video" autoplay playsinline></video>
-  <canvas id="canvas" style="display:none;"></canvas>
-</div>
+  <div id="loadingScreen">
+    Loading...
+  </div>
 
-<div id="controls" style="display:none;">
-  <button id="capture">Capture Photo</button>
-  <button id="retake" style="display:none;">Retake</button>
-</div>
+  <div id="cameraScreen">
+    <button id="backButton">❌</button>
+    <video id="video" autoplay playsinline></video>
 
-<div id="backgrounds" style="display:none;">
-  <select id="backgroundSelect">
-    <option value="none">Select Background</option>
-    <option value="background1.png">Background 1</option>
-    <option value="background2.png">Background 2</option>
-    <option value="background3.png">Background 3</option>
-    <option value="background4.png">Background 4</option>
-    <option value="background5.png">Background 5</option>
-    <option value="background6.png">Background 6</option>
-  </select>
-</div>
+    <div id="controls">
+      <button id="capture">Quiksnap</button>
+      <button id="retake" style="display:none;">Retake</button>
+      <a id="download" style="display:none;">Download</a>
+    </div>
 
-<div id="frames" style="display:none;">
-  <select id="frameSelect">
-    <option value="none">Select Frame</option>
-    <option value="frame1.png">Frame 1</option>
-    <option value="frame2.png">Frame 2</option>
-    <option value="frame3.png">Frame 3</option>
-    <option value="frame4.png">Frame 4</option>
-    <option value="frame5.png">Frame 5</option>
-    <option value="frame6.png">Frame 6</option>
-  </select>
-</div>
+    <input type="text" id="inputName" placeholder="Enter your message" style="display:none;">
 
-<a id="download" download="photo.png">📥 Download Photo</a>
+    <div class="slider" id="slider"></div>
 
-<script>
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const captureButton = document.getElementById('capture');
-  const retakeButton = document.getElementById('retake');
-  const backgroundSelect = document.getElementById('backgroundSelect');
-  const frameSelect = document.getElementById('frameSelect');
-  const downloadLink = document.getElementById('download');
-  const loadingScreen = document.getElementById('loading');
-  let stream;
-  let selectedBackground = null;
-  let selectedFrame = null;
+    <select id="modeSelect">
+      <option value="photo">Photo</option>
+      <option value="video">Video (10s)</option>
+    </select>
 
-  async function startCamera() {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      video.srcObject = stream;
-      video.onloadedmetadata = () => {
-        loadingScreen.style.display = 'none';
-        document.getElementById('camera-container').style.display = 'block';
-        document.getElementById('controls').style.display = 'flex';
-        document.getElementById('backgrounds').style.display = 'flex';
-        document.getElementById('frames').style.display = 'flex';
-      };
-    } catch (error) {
-      alert('Unable to access camera. Please check permissions.');
-      console.error(error);
-    }
-  }
+    <select id="filterSelect">
+      <option value="none">No Filter</option>
+      <option value="brightness(1.2)">Bright</option>
+      <option value="contrast(1.2)">Contrast</option>
+      <option value="saturate(1.2)">Vivid</option>
+    </select>
 
-  startCamera();
+    <canvas id="canvas" style="display:none;"></canvas>
+  </div>
 
-  backgroundSelect.addEventListener('change', () => {
-    selectedBackground = backgroundSelect.value;
-  });
+  <script>
+    const startScreen = document.getElementById('startScreen');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const cameraScreen = document.getElementById('cameraScreen');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const capture = document.getElementById('capture');
+    const retake = document.getElementById('retake');
+    const download = document.getElementById('download');
+    const backButton = document.getElementById('backButton');
+    const slider = document.getElementById('slider');
+    const modeSelect = document.getElementById('modeSelect');
+    const filterSelect = document.getElementById('filterSelect');
+    const inputName = document.getElementById('inputName');
 
-  frameSelect.addEventListener('change', () => {
-    selectedFrame = frameSelect.value;
-  });
+    let stream;
+    let mediaRecorder;
+    let recordedChunks = [];
+    let currentIndex = 0;
+    const backgrounds = ['background1.png', 'background2.png', 'background3.png', 'background4.png', 'background5.png', 'background6.png'];
+    const frames = ['frame1.png', 'frame2.png', 'frame3.png', 'frame4.png', 'frame5.png', 'frame6.png'];
 
-  captureButton.addEventListener('click', () => {
-    const context = canvas.getContext('2d');
-    const width = video.videoWidth;
-    const height = video.videoHeight;
-    canvas.width = width;
-    canvas.height = height;
+    document.getElementById('startButton').onclick = () => {
+      startScreen.style.display = 'none';
+      loadingScreen.style.display = 'flex';
+      startCamera();
+    };
 
-    context.drawImage(video, 0, 0, width, height);
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        video.srcObject = stream;
+        video.play();
 
-    if (selectedBackground && selectedBackground !== 'none') {
-      const bg = new Image();
-      bg.src = selectedBackground;
-      context.globalCompositeOperation = 'destination-over';
-      bg.onload = () => {
-        context.drawImage(bg, 0, 0, width, height);
-        if (selectedFrame && selectedFrame !== 'none') {
-          const frame = new Image();
-          frame.src = selectedFrame;
-          frame.onload = () => {
-            context.globalCompositeOperation = 'source-over';
-            context.drawImage(frame, 0, 0, width, height);
-            addMessage();
-          };
-        } else {
-          addMessage();
-        }
-      };
-    } else {
-      if (selectedFrame && selectedFrame !== 'none') {
-        const frame = new Image();
-        frame.src = selectedFrame;
-        frame.onload = () => {
-          context.drawImage(frame, 0, 0, width, height);
-          addMessage();
-        };
-      } else {
-        addMessage();
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          cameraScreen.style.display = 'flex';
+        }, 500);
+      } catch (error) {
+        loadingScreen.innerHTML = 'Camera not accessible. Please check permissions.';
       }
     }
 
-    function addMessage() {
-      const text = prompt("Enter your name/message:");
-      if (text) {
-        context.font = "48px 'Schoolbell', cursive";
-        context.fillStyle = "white";
-        context.strokeStyle = "black";
-        context.lineWidth = 3;
-        context.textAlign = "center";
-        context.strokeText(text, width / 2, height - 60);
-        context.fillText(text, width / 2, height - 60);
-      }
-      canvas.style.display = 'block';
-      video.style.display = 'none';
-      captureButton.style.display = 'none';
-      retakeButton.style.display = 'inline-block';
-      downloadLink.href = canvas.toDataURL('image/png');
-      downloadLink.style.display = 'inline-block';
+    function updateBackground(index) {
+      document.body.style.background = `url(${backgrounds[index]}) no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+      slider.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+      slider.querySelectorAll('button')[index].classList.add('selected');
     }
-  });
 
-  retakeButton.addEventListener('click', () => {
-    location.reload();
-  });
-</script>
+    backgrounds.forEach((bg, index) => {
+      const btn = document.createElement('button');
+      btn.style.backgroundImage = `url(${bg})`;
+      btn.style.backgroundSize = 'cover';
+      btn.onclick = () => {
+        currentIndex = index;
+        updateBackground(index);
+      };
+      slider.appendChild(btn);
+    });
+
+    updateBackground(0);
+
+    capture.onclick = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      ctx.save();
+      ctx.scale(-1, 1);
+      ctx.translate(-canvas.width, 0);
+      ctx.filter = filterSelect.value;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      const frame = new Image();
+      frame.src = frames[currentIndex];
+      frame.onload = () => {
+        ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+        ctx.font = '48px "Schoolbell", cursive';
+        ctx.fillStyle = 'white';
+        ctx.fillText(inputName.value, 50, 1800);
+
+        canvas.style.display = 'block';
+        inputName.style.display = 'block';
+        download.href = canvas.toDataURL('image/png');
+        download.download = `photo_${Date.now()}.png`;
+        download.style.display = 'inline-block';
+        retake.style.display = 'inline-block';
+      };
+    };
+
+    retake.onclick = () => location.reload();
+    backButton.onclick = () => location.reload();
+
+    filterSelect.onchange = () => video.style.filter = filterSelect.value;
+  </script>
 
 </body>
+
 </html>
