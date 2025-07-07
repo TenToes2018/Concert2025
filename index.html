@@ -3,219 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEN TOES ACADEMY - 拍照小程序</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>TEN TOES ACADEMY</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial Rounded MT Bold', 'Segoe UI', sans-serif;
+            font-family: 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: white;
         }
         
-        .app-container {
-            width: 100%;
-            max-width: 414px;
-            height: 736px;
-            background: #000;
-            border-radius: 30px;
-            overflow: hidden;
+        .container {
             position: relative;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
         }
         
-        /* 页面切换通用样式 */
-        .page {
+        /* 首页样式 */
+        .home-screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             display: flex;
             flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-            background: #0a0a16;
-        }
-        
-        .page.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        /* 首页样式 */
-        .home-page {
-            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), 
-                        url('https://images.unsplash.com/photo-1513151233558-d860c5398176?ixlib=rb-4.0.3') center/cover;
-            justify-content: center;
             align-items: center;
-            text-align: center;
+            justify-content: center;
+            z-index: 100;
+            transition: filter 0.5s;
         }
         
         .logo-container {
+            text-align: center;
             margin-bottom: 60px;
         }
         
-        .main-logo {
-            font-size: 48px;
+        .main-title {
+            font-size: 3.5rem;
             font-weight: 900;
-            letter-spacing: 3px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            margin-bottom: 20px;
-            color: #FFD700;
-        }
-        
-        .sub-logo {
-            font-size: 32px;
-            font-weight: 700;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 8px;
-            color: #FF6347;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         
-        .start-button {
-            background: linear-gradient(45deg, #FF512F, #F09819);
+        .sub-title {
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+        
+        .event-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .event-subtitle {
+            font-size: 1.3rem;
+            font-weight: 300;
+            margin-bottom: 50px;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.6;
+        }
+        
+        .start-btn {
+            background: #ff3366;
             color: white;
             border: none;
-            padding: 16px 50px;
-            font-size: 22px;
-            font-weight: bold;
+            padding: 15px 60px;
+            font-size: 1.5rem;
+            font-weight: 700;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(240, 152, 25, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
             transition: all 0.3s ease;
-            margin-top: 40px;
         }
         
-        .start-button:hover {
+        .start-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(240, 152, 25, 0.6);
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.6);
         }
         
-        .footer-text {
+        .loading-screen {
             position: absolute;
-            bottom: 30px;
+            top: 0;
+            left: 0;
             width: 100%;
-            text-align: center;
-            font-size: 18px;
-            letter-spacing: 1px;
-            color: #aaa;
-        }
-        
-        /* 加载页面样式 */
-        .loading-page {
-            background: linear-gradient(45deg, #8E2DE2, #4A00E0);
-            justify-content: center;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            text-align: center;
+            justify-content: center;
+            z-index: 101;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
         }
         
-        .loading-content {
-            padding: 20px;
-        }
-        
-        .loading-title {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            color: #FFD700;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .loading-subtitle {
-            font-size: 26px;
-            font-weight: 700;
-            margin-bottom: 40px;
-            color: white;
-        }
-        
-        .concert-title {
-            font-size: 28px;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-            color: #FF6347;
-        }
-        
-        .journey-text {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 60px;
-            color: #7CFC00;
-        }
-        
-        .spinner {
-            width: 80px;
-            height: 80px;
-            border: 8px solid rgba(255, 255, 255, 0.3);
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top: 8px solid #FFD700;
+            border-top-color: #ff3366;
             animation: spin 1s linear infinite;
-            margin: 40px auto;
+            margin-bottom: 20px;
         }
         
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
         
-        /* 拍照页面样式 */
-        .camera-page {
-            background: #111;
+        .loading-text {
+            font-size: 1.2rem;
+            color: #fff;
         }
         
-        .camera-header {
-            display: flex;
-            justify-content: space-between;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 10;
+        /* 相机页面样式 */
+        .camera-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            z-index: 90;
         }
         
-        .header-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .header-btn i {
-            font-size: 24px;
-            color: white;
-        }
-        
-        .camera-container {
-            flex: 1;
+        .camera-preview {
             position: relative;
+            height: 70vh;
             overflow: hidden;
         }
         
-        #videoElement {
+        .preview-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transform: scaleX(-1);
+            z-index: 1;
+        }
+        
+        .camera-feed {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+            z-index: 2;
+            border-radius: 10px;
         }
         
         .frame-overlay {
@@ -224,111 +179,693 @@
             left: 0;
             width: 100%;
             height: 100%;
+            object-fit: contain;
+            z-index: 3;
             pointer-events: none;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
         }
         
-        .current-frame {
+        .top-controls {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 320px;
-            height: 480px;
-            border: 8px solid gold;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-            z-index: 5;
-        }
-        
-        .flag-selector {
-            position: absolute;
-            bottom: 130px;
+            top: 20px;
+            left: 0;
             width: 100%;
-            height: 100px;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
             z-index: 10;
         }
         
-        .flags-container {
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding: 0 20px;
-            width: 100%;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .flags-container::-webkit-scrollbar {
+        .control-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            transform: scale(1.1);
+        }
+        
+        .control-btn img {
+            width: 60%;
+            height: 60%;
+            filter: invert(1);
+        }
+        
+        .style-selector {
+            position: absolute;
+            bottom: 160px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .style-scroller {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .style-scroller::-webkit-scrollbar {
             display: none;
         }
         
-        .flag-item {
+        .style-button {
             width: 70px;
             height: 70px;
             border-radius: 50%;
-            margin: 0 10px;
-            background: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
+            margin: 0 8px;
             flex-shrink: 0;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
             overflow: hidden;
-            border: 3px solid transparent;
+            border: 2px solid transparent;
+            background-size: cover;
+            background-position: center;
         }
         
-        .flag-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .flag-item.active {
+        .style-button.active {
             width: 90px;
             height: 90px;
-            border: 4px solid gold;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            border: 3px solid #ff3366;
+            transform: translateY(-10px);
         }
         
-        .camera-controls {
+        .style-button:nth-child(1) { background: linear-gradient(45deg, #ff3366, #ff9933); }
+        .style-button:nth-child(2) { background: linear-gradient(45deg, #3366ff, #33ccff); }
+        .style-button:nth-child(3) { background: linear-gradient(45deg, #9933ff, #ff33cc); }
+        .style-button:nth-child(4) { background: linear-gradient(45deg, #33cc33, #ccff33); }
+        .style-button:nth-child(5) { background: linear-gradient(45deg, #ff3333, #ffcc33); }
+        .style-button:nth-child(6) { background: linear-gradient(45deg, #3333ff, #33ffff); }
+        .style-button:nth-child(7) { background: linear-gradient(45deg, #cc33ff, #ff99cc); }
+        .style-button:nth-child(8) { background: linear-gradient(45deg, #33ffcc, #ccff99); }
+        .style-button:nth-child(9) { background: linear-gradient(45deg, #ffcc33, #ff6633); }
+        .style-button:nth-child(10) { background: linear-gradient(45deg, #6633ff, #33cccc); }
+        
+        .capture-controls {
             position: absolute;
-            bottom: 0;
+            bottom: 50px;
+            left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             z-index: 10;
         }
         
-        .mode-selector {
+        .capture-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #ff3366;
+            border: 5px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .capture-button:active {
+            transform: scale(0.95);
+            background: #ff1a55;
+        }
+        
+        .capture-button.video-recording::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 3px solid #ff3366;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .mode-bar {
             display: flex;
-            gap: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 30px;
+            padding: 8px;
         }
         
         .mode-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #aaa;
+            padding: 8px 20px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
             border: none;
-            padding: 10px 20px;
             border-radius: 20px;
-            font-size: 16px;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
         
         .mode-btn.active {
-            background: linear-gradient(45deg, #FF512F, #F09819);
+            background: #ff3366;
             color: white;
         }
         
-        .capture-btn {
-            width: 70px;
-   
+        .timer {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            z-index: 10;
+            display: none;
+        }
+        
+        .preview-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            z-index: 95;
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: 85%;
+            object-fit: contain;
+        }
+        
+        .preview-video {
+            width: 100%;
+            height: 85%;
+            object-fit: contain;
+        }
+        
+        .preview-controls {
+            height: 15%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        .preview-btn {
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .preview-btn.retake {
+            background: #333;
+            color: white;
+        }
+        
+        .preview-btn.home {
+            background: #666;
+            color: white;
+        }
+        
+        .preview-btn.download {
+            background: #ff3366;
+            color: white;
+        }
+        
+        .preview-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .filter-bar {
+            position: absolute;
+            bottom: 260px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .filter-bar.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .filter-btn {
+            padding: 8px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin: 0 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active {
+            background: #ff3366;
+        }
+        
+        .filter-btn:nth-child(1) { background: rgba(255, 200, 200, 0.3); }
+        .filter-btn:nth-child(2) { background: rgba(200, 255, 200, 0.3); }
+        .filter-btn:nth-child(3) { background: rgba(200, 200, 255, 0.3); }
+        
+        .filter-btn.active:nth-child(1) { background: rgba(255, 150, 150, 0.7); }
+        .filter-btn.active:nth-child(2) { background: rgba(150, 255, 150, 0.7); }
+        .filter-btn.active:nth-child(3) { background: rgba(150, 150, 255, 0.7); }
+        
+        .title-bar {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            padding: 10px 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 首页 -->
+        <div class="home-screen" id="homeScreen">
+            <div class="logo-container">
+                <h1 class="main-title">TEN TOES</h1>
+                <h2 class="sub-title">ACADEMY</h2>
+            </div>
+            
+            <h3 class="event-title">ANNUAL CONCERT 2025</h3>
+            <p class="event-subtitle">Ten Toes Fun Journey Together</p>
+            
+            <button class="start-btn" id="startBtn">START</button>
+        </div>
+        
+        <!-- 加载页面 -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">加载中...</div>
+        </div>
+        
+        <!-- 相机页面 -->
+        <div class="camera-screen" id="cameraScreen">
+            <div class="title-bar">10s Quiksnap Filter</div>
+            
+            <div class="camera-preview">
+                <img class="preview-bg" id="previewBg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600' viewBox='0 0 400 600'%3E%3Crect width='400' height='600' fill='%231a2a6c'/%3E%3C/svg%3E" alt="Background">
+                <video class="camera-feed" id="cameraFeed" autoplay playsinline></video>
+                <img class="frame-overlay" id="frameOverlay" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600' viewBox='0 0 400 600'%3E%3Crect x='10' y='10' width='380' height='580' rx='20' fill='none' stroke='white' stroke-width='4' stroke-dasharray='20,10'/%3E%3C/svg%3E" alt="Frame">
+                
+                <div class="top-controls">
+                    <div class="control-btn" id="retakeBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                    </div>
+                    <div class="control-btn" id="homeBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </div>
+                    <div class="control-btn" id="downloadBtn">
+                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    </div>
+                </div>
+                
+                <div class="timer" id="timer">10s</div>
+            </div>
+            
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-btn" data-filter="warm">暖色滤镜</button>
+                <button class="filter-btn" data-filter="cool">冷色滤镜</button>
+                <button class="filter-btn" data-filter="vintage">复古滤镜</button>
+            </div>
+            
+            <div class="style-selector">
+                <div class="style-scroller">
+                    <div class="style-button active" data-style="1"></div>
+                    <div class="style-button" data-style="2"></div>
+                    <div class="style-button" data-style="3"></div>
+                    <div class="style-button" data-style="4"></div>
+                    <div class="style-button" data-style="5"></div>
+                    <div class="style-button" data-style="6"></div>
+                    <div class="style-button" data-style="7"></div>
+                    <div class="style-button" data-style="8"></div>
+                    <div class="style-button" data-style="9"></div>
+                    <div class="style-button" data-style="10"></div>
+                </div>
+            </div>
+            
+            <div class="capture-controls">
+                <div class="capture-button" id="captureBtn"></div>
+                <div class="mode-bar">
+                    <button class="mode-btn active" data-mode="photo">拍照</button>
+                    <button class="mode-btn" data-mode="video">10s视频</button>
+                    <button class="mode-btn" id="filterToggle">滤镜</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 预览页面 -->
+        <div class="preview-screen" id="previewScreen">
+            <img class="preview-image" id="previewImage" src="" alt="预览" style="display: none;">
+            <video class="preview-video" id="previewVideo" controls style="display: none;"></video>
+            
+            <div class="preview-controls">
+                <button class="preview-btn retake" id="previewRetake">重拍</button>
+                <button class="preview-btn home" id="previewHome">首页</button>
+                <button class="preview-btn download" id="previewDownload">下载</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面元素
+            const homeScreen = document.getElementById('homeScreen');
+            const loadingScreen = document.getElementById('loadingScreen');
+            const cameraScreen = document.getElementById('cameraScreen');
+            const previewScreen = document.getElementById('previewScreen');
+            const startBtn = document.getElementById('startBtn');
+            const captureBtn = document.getElementById('captureBtn');
+            const retakeBtn = document.getElementById('retakeBtn');
+            const homeBtn = document.getElementById('homeBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const cameraFeed = document.getElementById('cameraFeed');
+            const previewBg = document.getElementById('previewBg');
+            const frameOverlay = document.getElementById('frameOverlay');
+            const previewImage = document.getElementById('previewImage');
+            const previewVideo = document.getElementById('previewVideo');
+            const previewRetake = document.getElementById('previewRetake');
+            const previewHome = document.getElementById('previewHome');
+            const previewDownload = document.getElementById('previewDownload');
+            const styleButtons = document.querySelectorAll('.style-button');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const filterToggle = document.getElementById('filterToggle');
+            const filterBar = document.getElementById('filterBar');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const timer = document.getElementById('timer');
+            
+            // 状态变量
+            let currentMode = 'photo'; // 'photo' or 'video'
+            let currentStyle = 1;
+            let currentFilter = null;
+            let mediaStream = null;
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let recordingTimer = null;
+            let recordingTime = 10;
+            
+            // 模拟背景和边框资源
+            const backgrounds = Array(10).fill().map((_, i) => `background${i+1}.png`);
+            const frames = Array(10).fill().map((_, i) => `frame${i+1}.png`);
+            
+            // 启动应用程序
+            startBtn.addEventListener('click', startApp);
+            
+            function startApp() {
+                // 显示加载屏幕
+                homeScreen.style.filter = 'blur(10px)';
+                loadingScreen.style.opacity = '1';
+                loadingScreen.style.pointerEvents = 'all';
+                
+                // 模拟3秒加载时间
+                setTimeout(() => {
+                    initCamera();
+                }, 3000);
+            }
+            
+            function initCamera() {
+                // 请求摄像头权限
+                navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                })
+                .then(stream => {
+                    mediaStream = stream;
+                    cameraFeed.srcObject = stream;
+                    
+                    // 隐藏加载屏幕，显示相机屏幕
+                    loadingScreen.style.opacity = '0';
+                    loadingScreen.style.pointerEvents = 'none';
+                    cameraScreen.style.display = 'flex';
+                    
+                    // 设置初始样式
+                    updateStyle(currentStyle);
+                })
+                .catch(err => {
+                    console.error('摄像头访问失败:', err);
+                    alert('无法访问摄像头，请确保您已授予权限');
+                    loadingScreen.style.opacity = '0';
+                    homeScreen.style.filter = 'none';
+                });
+            }
+            
+            // 更新当前样式
+            function updateStyle(style) {
+                currentStyle = style;
+                
+                // 更新背景
+                previewBg.src = `background${style}.png`;
+                
+                // 更新边框
+                frameOverlay.src = `frame${style}.png`;
+                
+                // 更新活动按钮
+                styleButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.style == style) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            // 样式按钮事件
+            styleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    updateStyle(btn.dataset.style);
+                });
+            });
+            
+            // 模式切换
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // 如果是滤镜按钮，切换滤镜面板
+                    if (btn.id === 'filterToggle') {
+                        filterBar.classList.toggle('active');
+                        return;
+                    }
+                    
+                    // 切换模式
+                    modeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMode = btn.dataset.mode;
+                    
+                    // 重置滤镜面板状态
+                    filterBar.classList.remove('active');
+                });
+            });
+            
+            // 滤镜选择
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    
+                    if (btn.dataset.filter === currentFilter) {
+                        // 取消选择当前滤镜
+                        currentFilter = null;
+                        cameraFeed.style.filter = 'none';
+                    } else {
+                        // 应用新滤镜
+                        btn.classList.add('active');
+                        currentFilter = btn.dataset.filter;
+                        
+                        // 应用滤镜效果（模拟）
+                        switch(currentFilter) {
+                            case 'warm':
+                                cameraFeed.style.filter = 'sepia(0.3) saturate(1.5) brightness(1.1)';
+                                break;
+                            case 'cool':
+                                cameraFeed.style.filter = 'hue-rotate(180deg) saturate(1.2) contrast(1.1)';
+                                break;
+                            case 'vintage':
+                                cameraFeed.style.filter = 'sepia(0.5) contrast(1.2) brightness(0.9)';
+                                break;
+                        }
+                    }
+                });
+            });
+            
+            // 拍照/录像控制
+            captureBtn.addEventListener('mousedown', startCapture);
+            captureBtn.addEventListener('touchstart', startCapture);
+            captureBtn.addEventListener('mouseup', stopCapture);
+            captureBtn.addEventListener('touchend', stopCapture);
+            
+            function startCapture(e) {
+                e.preventDefault();
+                
+                if (currentMode === 'video') {
+                    // 视频录制
+                    captureBtn.classList.add('video-recording');
+                    timer.style.display = 'block';
+                    timer.textContent = `${recordingTime}s`;
+                    
+                    // 开始录制
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(mediaStream);
+                    
+                    mediaRecorder.ondataavailable = event => {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                        const url = URL.createObjectURL(blob);
+                        previewVideo.src = url;
+                    };
+                    
+                    mediaRecorder.start();
+                    
+                    // 设置倒计时
+                    let timeLeft = recordingTime;
+                    recordingTimer = setInterval(() => {
+                        timeLeft--;
+                        timer.textContent = `${timeLeft}s`;
+                        
+                        if (timeLeft <= 0) {
+                            stopCapture();
+                        }
+                    }, 1000);
+                }
+            }
+            
+            function stopCapture() {
+                if (currentMode === 'video') {
+                    // 停止视频录制
+                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                        mediaRecorder.stop();
+                    }
+                    
+                    captureBtn.classList.remove('video-recording');
+                    clearInterval(recordingTimer);
+                    timer.style.display = 'none';
+                    
+                    // 显示预览
+                    setTimeout(() => {
+                        cameraScreen.style.display = 'none';
+                        previewScreen.style.display = 'flex';
+                        previewVideo.style.display = 'block';
+                        previewImage.style.display = 'none';
+                    }, 500);
+                } else {
+                    // 拍照
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    canvas.width = cameraFeed.videoWidth;
+                    canvas.height = cameraFeed.videoHeight;
+                    
+                    // 应用滤镜效果到canvas（模拟）
+                    context.filter = cameraFeed.style.filter;
+                    
+                    context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+                    
+                    previewImage.src = canvas.toDataURL('image/png');
+                    
+                    // 显示预览
+                    cameraScreen.style.display = 'none';
+                    previewScreen.style.display = 'flex';
+                    previewImage.style.display = 'block';
+                    previewVideo.style.display = 'none';
+                }
+            }
+            
+            // 相机控制按钮
+            retakeBtn.addEventListener('click', () => {
+                // 重拍
+                previewScreen.style.display = 'none';
+                cameraScreen.style.display = 'flex';
+            });
+            
+            homeBtn.addEventListener('click', () => {
+                // 返回首页
+                stopMedia();
+                cameraScreen.style.display = 'none';
+                homeScreen.style.filter = 'none';
+            });
+            
+            downloadBtn.addEventListener('click', () => {
+                // 下载（在预览中实现）
+                alert('请在预览页面下载');
+            });
+            
+            // 预览控制按钮
+            previewRetake.addEventListener('click', () => {
+                previewScreen.style.display = 'none';
+                cameraScreen.style.display = 'flex';
+            });
+            
+            previewHome.addEventListener('click', () => {
+                stopMedia();
+                previewScreen.style.display = 'none';
+                homeScreen.style.filter = 'none';
+            });
+            
+            previewDownload.addEventListener('click', () => {
+                if (previewImage.style.display === 'block') {
+                    // 下载图片
+                    const link = document.createElement('a');
+                    link.href = previewImage.src;
+                    link.download = `ten-toes-${new Date().getTime()}.png`;
+                    link.click();
+                } else {
+                    // 下载视频
+                    const link = document.createElement('a');
+                    link.href = previewVideo.src;
+                    link.download = `ten-toes-${new Date().getTime()}.mp4`;
+                    link.click();
+                }
+            });
+            
+            // 停止媒体流
+            function stopMedia() {
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                }
+            }
+            
+            // 初始设置
+            updateStyle(1);
+        });
+    </script>
+</body>
+</html>
