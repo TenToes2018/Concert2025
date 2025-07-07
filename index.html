@@ -1,30 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insta Story Style Camera</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Ten Toes Academy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Schoolbell&display=swap" rel="stylesheet">
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Chewy', cursive;
+      background-color: #000;
+      color: white;
+      text-align: center;
+    }
+
+    #startScreen, #loadingScreen, #cameraScreen {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #startScreen {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #loadingScreen {
+      backdrop-filter: blur(5px);
+      font-size: 24px;
+      font-weight: bold;
+      color: white;
+    }
+
+    #cameraScreen {
+      backdrop-filter: blur(5px);
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    video, canvas {
+      width: 360px;
+      height: 640px;
+      object-fit: cover;
+      transform: scaleX(-1);
+      border-radius: 16px;
+      margin-top: 20px;
+    }
+
+    #controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .slider {
+      display: flex;
+      overflow-x: auto;
+      width: 80%;
+      margin: 10px auto;
+    }
+
+    .slider button {
+      min-width: 80px;
+      height: 80px;
+      margin: 0 5px;
+      border: none;
+      border-radius: 50%;
+      background-color: white;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .slider button.selected {
+      transform: scale(1.3);
+    }
+
+    #filterSelect, #modeSelect {
+      margin: 10px;
+      font-size: 16px;
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    #retake, #download, #capture {
+      margin: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: #ff3366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Chewy', cursive;
+    }
+
+    #backButton {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #inputName {
+      margin: 10px auto;
+      padding: 5px;
+      width: 80%;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #startButton {
+      padding: 10px 30px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      background-color: #ff3366;
+      color: white;
+      cursor: pointer;
+      font-family: 'Chewy', cursive;
+      margin-top: 20px;
+    }
+
+    .title {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: #ff3366;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .subtitle {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .concert-title {
+      font-size: 32px;
+      margin: 20px 0;
+      color: #ffcc00;
+    }
+
+    .tagline {
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+  </style>
 </head>
+
 <body>
 
-<div id="camera-container">
-  <video id="camera" autoplay playsinline></video>
-  
-  <div id="slider">
-    <div id="buttons"></div>
+  <div id="startScreen">
+    <h1 class="title">TEN TOES</h1>
+    <h2 class="subtitle">ACADEMY</h2>
+    <div class="concert-title">ANNUAL CONCERT 2025</div>
+    <div class="tagline">Ten Toes Fun Journey Together</div>
+    <button id="startButton">START</button>
   </div>
-  
-  <div id="controls">
-    <button id="capture-btn"></button>
-    <div id="filter-options">
-      <button onclick="setFilter('none')">No Filter</button>
-      <button onclick="setFilter('brightness(1.2)')">Bright</button>
-      <button onclick="setFilter('contrast(1.5)')">Contrast</button>
-    </div>
-  </div>
-</div>
 
-<script src="script.js"></script>
+  <div id="loadingScreen">
+    Loading...
+  </div>
+
+  <div id="cameraScreen">
+    <button id="backButton">❌</button>
+    <div style="font-size: 24px; margin-bottom: 10px;">TEN TOES</div>
+    <div style="font-size: 16px; margin-bottom: 20px;">ACADEMY</div>
+    
+    <video id="video" autoplay playsinline></video>
+
+    <div id="controls">
+      <button id="capture">Quiksnap</button>
+      <button id="retake" style="display:none;">Retake</button>
+      <a id="download" style="display:none;">Download</a>
+    </div>
+
+    <input type="text" id="inputName" placeholder="Enter your message" style="display:none;">
+
+    <div class="slider" id="slider"></div>
+
+    <select id="modeSelect">
+      <option value="photo">Photo</option>
+      <option value="video">Video (10s)</option>
+    </select>
+
+    <select id="filterSelect">
+      <option value="none">No Filter</option>
+      <option value="brightness(1.2)">Bright</option>
+      <option value="contrast(1.2)">Contrast</option>
+      <option value="saturate(1.2)">Vivid</option>
+    </select>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+  </div>
+
+  <script>
+    const startScreen = document.getElementById('startScreen');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const cameraScreen = document.getElementById('cameraScreen');
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const capture = document.getElementById('capture');
+    const retake = document.getElementById('retake');
+    const download = document.getElementById('download');
+    const backButton = document.getElementById('backButton');
+    const slider = document.getElementById('slider');
+    const modeSelect = document.getElementById('modeSelect');
+    const filterSelect = document.getElementById('filterSelect');
+    const inputName = document.getElementById('inputName');
+
+    let stream;
+    let currentIndex = 0;
+    const backgrounds = ['background1.png', 'background2.png', 'background3.png', 'background4.png', 'background5.png', 'background6.png'];
+    const frames = ['frame1.png', 'frame2.png', 'frame3.png', 'frame4.png', 'frame5.png', 'frame6.png'];
+
+    document.getElementById('startButton').onclick = () => {
+      startScreen.style.display = 'none';
+      loadingScreen.style.display = 'flex';
+      startCamera();
+    };
+
+    async function startCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        video.srcObject = stream;
+        video.play();
+
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          cameraScreen.style.display = 'flex';
+        }, 500);
+      } catch (error) {
+        loadingScreen.innerHTML = 'Camera not accessible. Please check permissions.';
+      }
+    }
+
+    function updateBackground(index) {
+      document.body.style.background = `url(${backgrounds[index]}) no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+      slider.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+      slider.querySelectorAll('button')[index].classList.add('selected');
+    }
+
+    backgrounds.forEach((bg, index) => {
+      const btn = document.createElement('button');
+      btn.style.backgroundImage = `url(${bg})`;
+      btn.style.backgroundSize = 'cover';
+      btn.onclick = () => {
+        currentIndex = index;
+        updateBackground(index);
+      };
+      slider.appendChild(btn);
+    });
+
+    updateBackground(0);
+
+    capture.onclick = () => {
+      const ctx = canvas.getContext('2d');
+      canvas.width = 1080;
+      canvas.height = 1920;
+
+      ctx.save();
+      ctx.scale(-1, 1);
+      ctx.translate(-canvas.width, 0);
+      ctx.filter = filterSelect.value;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      const frame = new Image();
+      frame.src = frames[currentIndex];
+      frame.onload = () => {
+        ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+        ctx.font = '48px "Schoolbell", cursive';
+        ctx.fillStyle = 'white';
+        ctx.fillText(inputName.value, 50, 1800);
+
+        canvas.style.display = 'block';
+        inputName.style.display = 'block';
+        download.href = canvas.toDataURL('image/png');
+        download.download = `ten_toes_${Date.now()}.png`;
+        download.style.display = 'inline-block';
+        retake.style.display = 'inline-block';
+      };
+    };
+
+    retake.onclick = () => location.reload();
+    backButton.onclick = () => location.reload();
+
+    filterSelect.onchange = () => video.style.filter = filterSelect.value;
+  </script>
+
 </body>
+
 </html>
