@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TEN TOES ACADEMY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -18,6 +18,7 @@
             color: #fff;
             overflow: hidden;
             height: 100vh;
+            font-family: 'Chewy', cursive, sans-serif;
         }
         
         .container {
@@ -34,7 +35,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background: url('BG_DEMO1.png') no-repeat center center;
+            background-size: cover;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -50,7 +52,7 @@
         
         .main-title {
             font-size: 3.5rem;
-            font-weight: 900;
+            font-weight: normal;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 10px;
@@ -59,21 +61,21 @@
         
         .sub-title {
             font-size: 1.8rem;
-            font-weight: 300;
+            font-weight: normal;
             letter-spacing: 1px;
             margin-bottom: 30px;
         }
         
         .event-title {
             font-size: 2.2rem;
-            font-weight: 700;
+            font-weight: normal;
             margin-bottom: 20px;
             text-align: center;
         }
         
         .event-subtitle {
             font-size: 1.3rem;
-            font-weight: 300;
+            font-weight: normal;
             margin-bottom: 50px;
             text-align: center;
             max-width: 80%;
@@ -86,11 +88,12 @@
             border: none;
             padding: 15px 60px;
             font-size: 1.5rem;
-            font-weight: 700;
+            font-weight: normal;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(255, 51, 102, 0.4);
             transition: all 0.3s ease;
+            font-family: 'Chewy', cursive;
         }
         
         .start-btn:hover {
@@ -104,7 +107,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: url('BG_DEMO.png') no-repeat center center;
+            background-size: cover;
+            filter: blur(10px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,6 +137,7 @@
         .loading-text {
             font-size: 1.2rem;
             color: #fff;
+            font-family: 'Chewy', cursive;
         }
         
         /* 相机页面样式 */
@@ -171,6 +177,7 @@
             object-fit: cover;
             z-index: 2;
             border-radius: 10px;
+            transform: scaleX(-1); /* 镜像效果 */
         }
         
         .frame-overlay {
@@ -250,9 +257,9 @@
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
-            border: 2px solid transparent;
             background-size: cover;
             background-position: center;
+            border: 2px solid transparent;
         }
         
         .style-button.active {
@@ -261,17 +268,6 @@
             border: 3px solid #ff3366;
             transform: translateY(-10px);
         }
-        
-        .style-button:nth-child(1) { background: linear-gradient(45deg, #ff3366, #ff9933); }
-        .style-button:nth-child(2) { background: linear-gradient(45deg, #3366ff, #33ccff); }
-        .style-button:nth-child(3) { background: linear-gradient(45deg, #9933ff, #ff33cc); }
-        .style-button:nth-child(4) { background: linear-gradient(45deg, #33cc33, #ccff33); }
-        .style-button:nth-child(5) { background: linear-gradient(45deg, #ff3333, #ffcc33); }
-        .style-button:nth-child(6) { background: linear-gradient(45deg, #3333ff, #33ffff); }
-        .style-button:nth-child(7) { background: linear-gradient(45deg, #cc33ff, #ff99cc); }
-        .style-button:nth-child(8) { background: linear-gradient(45deg, #33ffcc, #ccff99); }
-        .style-button:nth-child(9) { background: linear-gradient(45deg, #ffcc33, #ff6633); }
-        .style-button:nth-child(10) { background: linear-gradient(45deg, #6633ff, #33cccc); }
         
         .capture-controls {
             position: absolute;
@@ -334,6 +330,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: 'Chewy', cursive;
         }
         
         .mode-btn.active {
@@ -352,6 +349,7 @@
             font-size: 1.2rem;
             z-index: 10;
             display: none;
+            font-family: 'Chewy', cursive;
         }
         
         .preview-screen {
@@ -394,6 +392,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            font-family: 'Chewy', cursive;
         }
         
         .preview-btn.retake {
@@ -443,32 +442,29 @@
             margin: 0 5px;
             font-size: 0.9rem;
             cursor: pointer;
+            font-family: 'Chewy', cursive;
         }
         
         .filter-btn.active {
             background: #ff3366;
         }
         
-        .filter-btn:nth-child(1) { background: rgba(255, 200, 200, 0.3); }
-        .filter-btn:nth-child(2) { background: rgba(200, 255, 200, 0.3); }
-        .filter-btn:nth-child(3) { background: rgba(200, 200, 255, 0.3); }
-        
-        .filter-btn.active:nth-child(1) { background: rgba(255, 150, 150, 0.7); }
-        .filter-btn.active:nth-child(2) { background: rgba(150, 255, 150, 0.7); }
-        .filter-btn.active:nth-child(3) { background: rgba(150, 150, 255, 0.7); }
-        
-        .title-bar {
+        .brand-text {
             position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
-            text-align: center;
             z-index: 10;
+            font-family: 'Chewy', cursive;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .top-brand {
+            top: 10px;
             font-size: 1.2rem;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            padding: 10px 0;
-            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .bottom-brand {
+            bottom: 130px;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -495,27 +491,29 @@
         
         <!-- 相机页面 -->
         <div class="camera-screen" id="cameraScreen">
-            <div class="title-bar">10s Quiksnap Filter</div>
+            <div class="brand-text top-brand">TEN TOES MADE IN CHINA</div>
             
             <div class="camera-preview">
-                <img class="preview-bg" id="previewBg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600' viewBox='0 0 400 600'%3E%3Crect width='400' height='600' fill='%231a2a6c'/%3E%3C/svg%3E" alt="Background">
+                <img class="preview-bg" id="previewBg" src="background1.png" alt="Background">
                 <video class="camera-feed" id="cameraFeed" autoplay playsinline></video>
-                <img class="frame-overlay" id="frameOverlay" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600' viewBox='0 0 400 600'%3E%3Crect x='10' y='10' width='380' height='580' rx='20' fill='none' stroke='white' stroke-width='4' stroke-dasharray='20,10'/%3E%3C/svg%3E" alt="Frame">
+                <img class="frame-overlay" id="frameOverlay" src="frame1.png" alt="Frame">
                 
                 <div class="top-controls">
                     <div class="control-btn" id="retakeBtn">
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                        <img src="retake.png" alt="Retake">
                     </div>
                     <div class="control-btn" id="homeBtn">
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <img src="cross.png" alt="Home">
                     </div>
                     <div class="control-btn" id="downloadBtn">
-                        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        <img src="download.png" alt="Download">
                     </div>
                 </div>
                 
                 <div class="timer" id="timer">10s</div>
             </div>
+            
+            <div class="brand-text bottom-brand">OKKS KOREA AK *</div>
             
             <div class="filter-bar" id="filterBar">
                 <button class="filter-btn" data-filter="warm">暖色滤镜</button>
@@ -525,25 +523,25 @@
             
             <div class="style-selector">
                 <div class="style-scroller">
-                    <div class="style-button active" data-style="1"></div>
-                    <div class="style-button" data-style="2"></div>
-                    <div class="style-button" data-style="3"></div>
-                    <div class="style-button" data-style="4"></div>
-                    <div class="style-button" data-style="5"></div>
-                    <div class="style-button" data-style="6"></div>
-                    <div class="style-button" data-style="7"></div>
-                    <div class="style-button" data-style="8"></div>
-                    <div class="style-button" data-style="9"></div>
-                    <div class="style-button" data-style="10"></div>
+                    <div class="style-button active" data-style="1" style="background-image: url('button1.png')"></div>
+                    <div class="style-button" data-style="2" style="background-image: url('button2.png')"></div>
+                    <div class="style-button" data-style="3" style="background-image: url('button3.png')"></div>
+                    <div class="style-button" data-style="4" style="background-image: url('button4.png')"></div>
+                    <div class="style-button" data-style="5" style="background-image: url('button5.png')"></div>
+                    <div class="style-button" data-style="6" style="background-image: url('button6.png')"></div>
+                    <div class="style-button" data-style="7" style="background-image: url('button7.png')"></div>
+                    <div class="style-button" data-style="8" style="background-image: url('button8.png')"></div>
+                    <div class="style-button" data-style="9" style="background-image: url('button9.png')"></div>
+                    <div class="style-button" data-style="10" style="background-image: url('button10.png')"></div>
                 </div>
             </div>
             
             <div class="capture-controls">
                 <div class="capture-button" id="captureBtn"></div>
                 <div class="mode-bar">
-                    <button class="mode-btn active" data-mode="photo">拍照</button>
-                    <button class="mode-btn" data-mode="video">10s视频</button>
-                    <button class="mode-btn" id="filterToggle">滤镜</button>
+                    <button class="mode-btn active" data-mode="photo">Quiksnap</button>
+                    <button class="mode-btn" data-mode="video">10s</button>
+                    <button class="mode-btn" id="filterToggle">Filter</button>
                 </div>
             </div>
         </div>
@@ -598,10 +596,6 @@
             let recordingTimer = null;
             let recordingTime = 10;
             
-            // 模拟背景和边框资源
-            const backgrounds = Array(10).fill().map((_, i) => `background${i+1}.png`);
-            const frames = Array(10).fill().map((_, i) => `frame${i+1}.png`);
-            
             // 启动应用程序
             startBtn.addEventListener('click', startApp);
             
@@ -635,9 +629,6 @@
                     loadingScreen.style.opacity = '0';
                     loadingScreen.style.pointerEvents = 'none';
                     cameraScreen.style.display = 'flex';
-                    
-                    // 设置初始样式
-                    updateStyle(currentStyle);
                 })
                 .catch(err => {
                     console.error('摄像头访问失败:', err);
@@ -799,13 +790,32 @@
                     
                     context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
                     
-                    previewImage.src = canvas.toDataURL('image/png');
+                    // 添加背景和边框
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = canvas.width;
+                    finalCanvas.height = canvas.height;
+                    const finalCtx = finalCanvas.getContext('2d');
                     
-                    // 显示预览
-                    cameraScreen.style.display = 'none';
-                    previewScreen.style.display = 'flex';
-                    previewImage.style.display = 'block';
-                    previewVideo.style.display = 'none';
+                    // 绘制背景
+                    finalCtx.drawImage(previewBg, 0, 0, finalCanvas.width, finalCanvas.height);
+                    
+                    // 绘制人像
+                    finalCtx.drawImage(canvas, 0, 0, finalCanvas.width, finalCanvas.height);
+                    
+                    // 绘制边框
+                    const frameImg = new Image();
+                    frameImg.src = frameOverlay.src;
+                    frameImg.onload = function() {
+                        finalCtx.drawImage(frameImg, 0, 0, finalCanvas.width, finalCanvas.height);
+                        
+                        previewImage.src = finalCanvas.toDataURL('image/png');
+                        
+                        // 显示预览
+                        cameraScreen.style.display = 'none';
+                        previewScreen.style.display = 'flex';
+                        previewImage.style.display = 'block';
+                        previewVideo.style.display = 'none';
+                    };
                 }
             }
             
