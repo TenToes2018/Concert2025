@@ -20,7 +20,7 @@
       background-size: cover;
     }
 
-    #loadingScreen, #cameraScreen {
+    #startScreen, #loadingScreen, #cameraScreen {
       display: none;
       justify-content: center;
       align-items: center;
@@ -31,30 +31,19 @@
       left: 0;
     }
 
-    #loadingScreen {
-      background: url('BG DEMO.png') no-repeat center center fixed;
-      background-size: cover;
-      backdrop-filter: blur(5px);
-      font-size: 24px;
-      font-weight: bold;
-      color: black;
+    #startScreen {
       display: flex;
       flex-direction: column;
     }
 
-    #startButton {
-      padding: 10px 30px;
+    #loadingScreen {
+      backdrop-filter: blur(5px);
       font-size: 24px;
-      border: none;
-      border-radius: 10px;
-      background-color: #1e88e5;
-      color: white;
-      cursor: pointer;
+      font-weight: bold;
+      color: black;
     }
 
     #cameraScreen {
-      background: url('BG DEMO.png') no-repeat center center fixed;
-      background-size: cover;
       backdrop-filter: blur(5px);
       flex-direction: column;
       justify-content: flex-start;
@@ -103,7 +92,7 @@
       font-size: 16px;
     }
 
-    #retake, #download, #back {
+    #retake, #download {
       margin: 10px;
       padding: 8px 16px;
       font-size: 16px;
@@ -130,12 +119,22 @@
       padding: 5px;
       width: 80%;
     }
+
+    #startButton {
+      padding: 10px 30px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      background-color: #1e88e5;
+      color: white;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
 
-  <div id="startScreen" style="display:flex; justify-content:center; align-items:center; height:100vh;">
+  <div id="startScreen">
     <img src="BG DEMO.png" style="position:absolute; width:100%; height:100%; object-fit:cover;">
     <button id="startButton">START</button>
   </div>
@@ -189,8 +188,6 @@
     const inputName = document.getElementById('inputName');
 
     let stream;
-    let mediaRecorder;
-    let recordedChunks = [];
     let currentIndex = 0;
     const backgrounds = ['background1.png', 'background2.png', 'background3.png', 'background4.png', 'background5.png', 'background6.png'];
     const frames = ['frame1.png', 'frame2.png', 'frame3.png', 'frame4.png', 'frame5.png', 'frame6.png'];
